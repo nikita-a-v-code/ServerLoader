@@ -37,4 +37,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Обновить список улиц
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE "Enforce".streets SET name = $1 WHERE id = $2 RETURNING *',
+      [name, id]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Удалить улицу по населенному пункту
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM "Enforce".streets WHERE id = $1', [id]);
+    res.json({ message: "Streets deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
