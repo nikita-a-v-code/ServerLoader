@@ -32,6 +32,7 @@ app.use("/api", require("./routes/consumers/consumers"));
 app.use("/api", require("./routes/structure/structure"));
 app.use("/api/", require("./routes/devices/devices"));
 app.use("/api", require("./routes/connections/connections"));
+app.use("/api/ports", require("./routes/ports/ports"));
 app.use("/api/excel", require("./routes/excel/excel"));
 
 // =============================================================================

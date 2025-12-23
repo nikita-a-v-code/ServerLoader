@@ -1,6 +1,6 @@
 const express = require("express");
-const createExcelWorkbook = require('./excelUtils');
-const sendEmailRouter = require('./sendEmail');
+const createExcelWorkbook = require("./excelUtils");
+const sendEmailRouter = require("./sendEmail");
 const router = express.Router();
 
 /* Выгрузка данных в Excel */
@@ -27,6 +27,6 @@ router.post("/export", async (req, res) => {
 });
 
 // Подключаем роутер для отправки email
-router.use('/', sendEmailRouter);
+router.use("/", sendEmailRouter);
 
 module.exports = router;
