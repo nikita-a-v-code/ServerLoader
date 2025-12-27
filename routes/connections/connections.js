@@ -5,7 +5,7 @@ const router = express.Router();
 // Получить все IP адреса
 router.get("/ip", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "Enforce".ip_addresses ORDER BY address');
+    const result = await pool.query('SELECT * FROM "Enforce".ip_addresses ORDER BY is_default DESC, address');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -51,10 +51,40 @@ router.delete("/ip/:id", async (req, res) => {
   }
 });
 
+// Установить IP адрес по умолчанию
+router.post("/ip/:id/default", async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query('UPDATE "Enforce".ip_addresses SET is_default = false');
+    const result = await client.query('UPDATE "Enforce".ip_addresses SET is_default = true WHERE id = $1 RETURNING *', [
+      id,
+    ]);
+    await client.query("COMMIT");
+    res.json(result.rows[0]);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
+});
+
+// Сбросить IP по умолчанию (оставить без дефолта)
+router.post("/ip/default/clear", async (_req, res) => {
+  try {
+    await pool.query('UPDATE "Enforce".ip_addresses SET is_default = false');
+    res.json({ message: "Default IP cleared" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Получить все протоколы
 router.get("/protocols", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "Enforce".protocols ORDER BY name');
+    const result = await pool.query('SELECT * FROM "Enforce".protocols ORDER BY is_default DESC, name');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -90,6 +120,36 @@ router.delete("/protocols/:id", async (req, res) => {
   try {
     await pool.query('DELETE FROM "Enforce".protocols WHERE id = $1', [id]);
     res.json({ message: "Abonent type deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Установить протокол по умолчанию
+router.post("/protocols/:id/default", async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query('UPDATE "Enforce".protocols SET is_default = false');
+    const result = await client.query('UPDATE "Enforce".protocols SET is_default = true WHERE id = $1 RETURNING *', [
+      id,
+    ]);
+    await client.query("COMMIT");
+    res.json(result.rows[0]);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
+});
+
+// Сбросить протокол по умолчанию (оставить без дефолта)
+router.post("/protocols/default/clear", async (_req, res) => {
+  try {
+    await pool.query('UPDATE "Enforce".protocols SET is_default = false');
+    res.json({ message: "Default protocol cleared" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
