@@ -35,6 +35,7 @@ app.use("/api", require("./routes/connections/connections"));
 app.use("/api/ports", require("./routes/ports/ports"));
 app.use("/api/excel", require("./routes/excel/excel"));
 app.use("/api/settings", require("./routes/settings/settings"));
+app.use("/api/users", require("./routes/users/users"));
 
 // =============================================================================
 // SERVER START
