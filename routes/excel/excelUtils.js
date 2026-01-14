@@ -27,7 +27,10 @@ const createExcelWorkbook = async (data) => {
     "",
     "",
     "",
-    "", // Опора и мощность
+    "", // Номер ТП, опора и мощность
+    "",
+    "",
+    "",
     "",
     "Прибор учета", // Модель счетчика до Номера пломбы на корпусе
     "",
@@ -82,8 +85,6 @@ const createExcelWorkbook = async (data) => {
     "",
     "",
     "",
-    "",
-    "",
   ];
 
   /* Определяем заголовки колонок */
@@ -108,8 +109,11 @@ const createExcelWorkbook = async (data) => {
     "Номер ТП 10(6)/0,4 кВ",
     "Номер фидера 0,4 кВ",
     "Код потребителя 3х-значный",
+    "Номер трансформаторной подстанции",
     "Номер опоры 0,4 кВ",
     "Максимальная мощность, кВт",
+    "Номер сим карты (полный)",
+    "Номер сим карты (короткий)",
     "Модель счетчика",
     "Кол-во фаз",
     "Заводской номер",
@@ -148,8 +152,6 @@ const createExcelWorkbook = async (data) => {
     '№ пломбы ТН "С"',
     "Примечание",
     "Сетевой адрес",
-    "Номер сим карты (полный)",
-    "Номер сим карты (короткий)",
     "IP адрес",
     "Номер коммуникатора (для счетчиков РиМ)",
     "Пароль на конфигурирование",
@@ -178,11 +180,11 @@ const createExcelWorkbook = async (data) => {
   worksheet.mergeCells("E1:J1"); // Адрес
   worksheet.mergeCells("K1:O1"); // Потребитель
   worksheet.mergeCells("P1:T1"); // Код сети
-  worksheet.mergeCells("U1:V1"); // Опора и мощность
-  worksheet.mergeCells("W1:AD1"); // Прибор учета
-  worksheet.mergeCells("AE1:AR1"); // ТТ
-  worksheet.mergeCells("AS1:BF1"); // ТН
-  worksheet.mergeCells("BG1:BY1"); // Соединение
+  worksheet.mergeCells("U1:Y1"); // ТП опора и мощность
+  worksheet.mergeCells("Z1:AG1"); // Прибор учета
+  worksheet.mergeCells("AH1:AU1"); // ТТ
+  worksheet.mergeCells("AV1:BI1"); // ТН
+  worksheet.mergeCells("BJ1:BZ1"); // Соединение
 
   /* Стилизуем разделы разными цветами */
   const groupHeaderRow = worksheet.getRow(1);
@@ -209,10 +211,10 @@ const createExcelWorkbook = async (data) => {
   worksheet.getCell("K1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.consumer } };
   worksheet.getCell("P1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.network } };
   worksheet.getCell("U1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.support } };
-  worksheet.getCell("W1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.device } };
-  worksheet.getCell("AE1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tt } };
-  worksheet.getCell("AS1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tn } };
-  worksheet.getCell("BG1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.connection } };
+  worksheet.getCell("Z1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.device } };
+  worksheet.getCell("AH1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tt } };
+  worksheet.getCell("AV1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tn } };
+  worksheet.getCell("BJ1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.connection } };
 
   /* Стилизуем заголовки с соответствующими цветами разделов */
   const headerRow = worksheet.getRow(2);
@@ -227,12 +229,11 @@ const createExcelWorkbook = async (data) => {
     else if (col >= 5 && col <= 10) color = colors.address; // Адрес
     else if (col >= 11 && col <= 15) color = colors.consumer; // Потребитель
     else if (col >= 16 && col <= 20) color = colors.network; // Код сети
-    else if (col >= 21 && col <= 22) color = colors.support; // Опора и мощность
-    else if (col >= 23 && col <= 30) color = colors.device; // Прибор учета
-    else if (col >= 31 && col <= 44) color = colors.tt; // ТТ
-    else if (col >= 45 && col <= 58) color = colors.tn; // ТН
-    else if (col >= 59) color = colors.connection; // Соединение
-
+    else if (col >= 21 && col <= 25) color = colors.support; // Опора и мощность
+    else if (col >= 26 && col <= 33) color = colors.device; // Прибор учета
+    else if (col >= 34 && col <= 47) color = colors.tt; // ТТ
+    else if (col >= 48 && col <= 61) color = colors.tn; // ТН
+    else if (col >= 62) color = colors.connection; // Соединение
     worksheet.getCell(2, col).fill = {
       type: "pattern",
       pattern: "solid",
@@ -305,8 +306,11 @@ const createExcelWorkbook = async (data) => {
     "Номер ТП 10(6)/0,4 кВ": "tpCode",
     "Номер фидера 0,4 кВ": "feeder04Code",
     "Код потребителя 3х-значный": "consumerCode",
+    "Номер трансформаторной подстанции": "transformerSubstationNumber",
     "Номер опоры 0,4 кВ": "numberSupport04",
     "Максимальная мощность, кВт": "maxPower",
+    "Номер сим карты (полный)": "simCardFull",
+    "Номер сим карты (короткий)": "simCardShort",
     "Модель счетчика": "deviceModel",
     "Кол-во фаз": "numberPhases",
     "Заводской номер": "serialNumber",
@@ -339,8 +343,6 @@ const createExcelWorkbook = async (data) => {
     '№ пломбы ТН "С"': "tnSealC",
     Примечание: "note",
     "Сетевой адрес": "networkAddress",
-    "Номер сим карты (полный)": "simCardFull",
-    "Номер сим карты (короткий)": "simCardShort",
     "IP адрес": "ipAddress",
     "Номер коммуникатора (для счетчиков РиМ)": "communicatorNumber",
     "Пароль на конфигурирование": "password",
@@ -416,8 +418,11 @@ const createExcelWorkbook = async (data) => {
       tpCode,
       feeder04Code,
       consumerCode,
+      normalizedItem.transformerSubstationNumber || "",
       normalizedItem.numberSupport04 || "",
       normalizedItem.maxPower || "",
+      normalizedItem.simCardFull || "",
+      normalizedItem.simCardShort || "",
       normalizedItem.deviceModel || "",
       normalizedItem.numberPhases || "",
       normalizedItem.serialNumber || "",
@@ -456,8 +461,6 @@ const createExcelWorkbook = async (data) => {
       normalizedItem.tnSealC || "",
       normalizedItem.note || "",
       normalizedItem.networkAddress || "",
-      normalizedItem.simCardFull || "",
-      normalizedItem.simCardShort || "",
       normalizedItem.ipAddress || "",
       normalizedItem.communicatorNumber || "",
       normalizedItem.password || "",
