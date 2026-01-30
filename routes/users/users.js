@@ -60,6 +60,18 @@ router.post("/login", async (req, res) => {
     // Генерируем JWT токен
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
+    // Логируем вход в систему
+    try {
+      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+      await pool.query(
+        `INSERT INTO "Enforce".action_logs (user_id, action, entity_type, details, ip_address)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [user.id, "login", "user", JSON.stringify({ login: user.login }), ip]
+      );
+    } catch (logError) {
+      console.error("Ошибка логирования входа:", logError);
+    }
+
     res.json({ success: true, token, user });
   } catch (error) {
     console.error("Ошибка авторизации:", error);

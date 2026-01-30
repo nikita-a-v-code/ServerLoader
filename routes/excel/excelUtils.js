@@ -122,6 +122,7 @@ const createExcelWorkbook = async (data) => {
     "Дата установки",
     "Номер пломбы на клеммной крышке",
     "Номер пломбы на корпусе счетчика",
+    "Номер коммуникатора (для счетчиков РиМ)",
     "Тип ТТ",
     'Заводской номер ТТ "А"',
     'Заводской номер ТТ "В"',
@@ -153,7 +154,6 @@ const createExcelWorkbook = async (data) => {
     "Примечание",
     "Сетевой адрес",
     "IP адрес",
-    "Номер коммуникатора (для счетчиков РиМ)",
     "Пароль на конфигурирование",
     "Дополнительные параметры счетчика",
     "Номера ком портов (указываем через запятую пример 3,4,5)",
@@ -181,10 +181,10 @@ const createExcelWorkbook = async (data) => {
   worksheet.mergeCells("K1:O1"); // Потребитель
   worksheet.mergeCells("P1:T1"); // Код сети
   worksheet.mergeCells("U1:Y1"); // ТП опора и мощность
-  worksheet.mergeCells("Z1:AG1"); // Прибор учета
-  worksheet.mergeCells("AH1:AU1"); // ТТ
-  worksheet.mergeCells("AV1:BI1"); // ТН
-  worksheet.mergeCells("BJ1:BZ1"); // Соединение
+  worksheet.mergeCells("Z1:AH1"); // Прибор учета
+  worksheet.mergeCells("AI1:AV1"); // ТТ
+  worksheet.mergeCells("AW1:BJ1"); // ТН
+  worksheet.mergeCells("BK1:BZ1"); // Соединение
 
   /* Стилизуем разделы разными цветами */
   const groupHeaderRow = worksheet.getRow(1);
@@ -212,9 +212,9 @@ const createExcelWorkbook = async (data) => {
   worksheet.getCell("P1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.network } };
   worksheet.getCell("U1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.support } };
   worksheet.getCell("Z1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.device } };
-  worksheet.getCell("AH1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tt } };
-  worksheet.getCell("AV1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tn } };
-  worksheet.getCell("BJ1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.connection } };
+  worksheet.getCell("AI1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tt } };
+  worksheet.getCell("AW1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.tn } };
+  worksheet.getCell("BK1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: colors.connection } };
 
   /* Стилизуем заголовки с соответствующими цветами разделов */
   const headerRow = worksheet.getRow(2);
@@ -225,15 +225,23 @@ const createExcelWorkbook = async (data) => {
   for (let col = 1; col <= headers.length; col++) {
     let color = "FFE0E0E0"; // Цвет по умолчанию
 
-    if (col >= 1 && col <= 4) color = colors.structure; // Организация и Структура
-    else if (col >= 5 && col <= 10) color = colors.address; // Адрес
-    else if (col >= 11 && col <= 15) color = colors.consumer; // Потребитель
-    else if (col >= 16 && col <= 20) color = colors.network; // Код сети
-    else if (col >= 21 && col <= 25) color = colors.support; // Опора и мощность
-    else if (col >= 26 && col <= 33) color = colors.device; // Прибор учета
-    else if (col >= 34 && col <= 47) color = colors.tt; // ТТ
-    else if (col >= 48 && col <= 61) color = colors.tn; // ТН
-    else if (col >= 62) color = colors.connection; // Соединение
+    if (col >= 1 && col <= 4)
+      color = colors.structure; // Организация и Структура
+    else if (col >= 5 && col <= 10)
+      color = colors.address; // Адрес
+    else if (col >= 11 && col <= 15)
+      color = colors.consumer; // Потребитель
+    else if (col >= 16 && col <= 20)
+      color = colors.network; // Код сети
+    else if (col >= 21 && col <= 25)
+      color = colors.support; // Опора и мощность
+    else if (col >= 26 && col <= 34)
+      color = colors.device; // Прибор учета
+    else if (col >= 35 && col <= 48)
+      color = colors.tt; // ТТ
+    else if (col >= 49 && col <= 62)
+      color = colors.tn; // ТН
+    else if (col >= 63) color = colors.connection; // Соединение
     worksheet.getCell(2, col).fill = {
       type: "pattern",
       pattern: "solid",
@@ -319,6 +327,7 @@ const createExcelWorkbook = async (data) => {
     "Дата установки": "dateInstallation",
     "Номер пломбы на клеммной крышке": "numberTerminal",
     "Номер пломбы на корпусе счетчика": "numberCasing",
+    "Номер коммуникатора (для счетчиков РиМ)": "communicatorNumber",
     "Тип ТТ": "ttType",
     'Заводской номер ТТ "А"': "ttSerialA",
     'Заводской номер ТТ "В"': "ttSerialB",
@@ -344,7 +353,6 @@ const createExcelWorkbook = async (data) => {
     Примечание: "note",
     "Сетевой адрес": "networkAddress",
     "IP адрес": "ipAddress",
-    "Номер коммуникатора (для счетчиков РиМ)": "communicatorNumber",
     "Пароль на конфигурирование": "password",
     "Дополнительные параметры счетчика": "advSettings",
     "Номера ком портов (указываем через запятую пример 3,4,5)": "comPorts",
@@ -431,6 +439,7 @@ const createExcelWorkbook = async (data) => {
       normalizedItem.dateInstallation || "",
       normalizedItem.numberTerminal || "",
       normalizedItem.numberCasing || "",
+      normalizedItem.communicatorNumber || "",
       normalizedItem.ttType || "",
       normalizedItem.ttSerialA || "",
       normalizedItem.ttSerialB || "",
@@ -462,7 +471,6 @@ const createExcelWorkbook = async (data) => {
       normalizedItem.note || "",
       normalizedItem.networkAddress || "",
       normalizedItem.ipAddress || "",
-      normalizedItem.communicatorNumber || "",
       normalizedItem.password || "",
       normalizedItem.advSettings || "",
       normalizedItem.comPorts || "",
