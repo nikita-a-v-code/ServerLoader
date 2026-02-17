@@ -40,8 +40,24 @@ app.use("/api/users", require("./routes/users/users"));
 app.use("/api/action-logs", require("./routes/action-logs/action-logs"));
 
 // =============================================================================
+// STATIC FILES (React Frontend)
+// =============================================================================
+const path = require("path");
+
+// Раздача статических файлов React (production build)
+const staticPath = path.join(__dirname, "../Loader/build");
+app.use(express.static(staticPath));
+
+// Все остальные запросы (не /api/*) направляем на React SPA
+app.get("*", (req, res) => {
+  res.sendFile(path.join(staticPath, "index.html"));
+});
+
+// =============================================================================
 // SERVER START
 // =============================================================================
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`API: http://localhost:${PORT}/api`);
+  console.log(`Frontend: http://localhost:${PORT}`);
 });
