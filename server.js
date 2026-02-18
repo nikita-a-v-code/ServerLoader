@@ -3,7 +3,7 @@ const cors = require("cors");
 const pool = require("./config/database");
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 18543;
 
 // =============================================================================
 // MIDDLEWARE
