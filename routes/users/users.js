@@ -15,6 +15,8 @@ const JWT_EXPIRES_IN = "7d"; // Токен действует 7 дней
 router.post("/login", async (req, res) => {
   try {
     const { login, password } = req.body;
+    
+    console.log('Login attempt:', { login, password: '***' });
 
     if (!login || !password) {
       return res.status(400).json({ success: false, error: "Введите логин и пароль" });
@@ -37,6 +39,8 @@ router.post("/login", async (req, res) => {
     `,
       [login, password]
     );
+    
+    console.log('Query result:', rows.length > 0 ? 'User found' : 'User not found');
 
     if (!rows[0]) {
       return res.status(401).json({ success: false, error: "Неверный логин или пароль" });
