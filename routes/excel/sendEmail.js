@@ -35,6 +35,7 @@ const createExcelWorkbook = require("./excelUtils");
 // Маппинг типов форм на читаемые названия
 const formTypeNames = {
   single_filling: "Заполнение по карточкам",
+  single_filling_ke: "Заполнение по карточкам КЭ-",
   section_filling: "Групповое заполнение",
   excel_import: "Валидированный Excel",
   loader: "Загрузчик",
@@ -43,6 +44,7 @@ const formTypeNames = {
 // Маппинг типов форм на префиксы файлов
 const formTypePrefixes = {
   single_filling: "Заполнение_по_карточкам",
+  single_filling_ke: "Заполнение_по_карточкам_КЭ-",
   section_filling: "Групповое_заполнение",
   excel_import: "Валидированный_Excel",
   loader: "loader",
@@ -51,8 +53,12 @@ const formTypePrefixes = {
 // POST /api/excel/send-email
 router.post("/send-email", async (req, res) => {
   try {
-    const { data, email, userId, formType = "loader" } = req.body;
+    const { data, email, userId, formType = "loader", isKE = false } = req.body;
     const ipAddress = req.headers["x-forwarded-for"] || req.connection?.remoteAddress || "unknown";
+
+    // ========== ВСТАВЬТЕ СЮДА ЛОГИРОВАНИЕ ==========
+    console.log("userId:", userId);
+    // =============================================
 
     if (!data || !email) {
       return res.status(400).json({ error: "Данные и email обязательны" });
@@ -64,6 +70,9 @@ router.post("/send-email", async (req, res) => {
     if (userId) {
       try {
         const userResult = await pool.query('SELECT full_name FROM "Enforce".users WHERE id = $1', [userId]);
+        // ========== И СЮДА ВСТАВЬТЕ ==========
+        console.log("full_name from DB:", userResult.rows[0]?.full_name);
+        // ===================================
         if (userResult.rows.length > 0 && userResult.rows[0].full_name) {
           // Формат: "Имя Фамилия <email>"
           senderEmail = `"${userResult.rows[0].full_name}" <${baseEmail}>`;
@@ -73,8 +82,12 @@ router.post("/send-email", async (req, res) => {
       }
     }
 
+    // ========== И СЮДА ==========
+    console.log("senderEmail:", senderEmail);
+    // =============================
+
     // Создаем Excel файл используя существующую логику
-    const buffer = await createExcelWorkbook(data);
+    const buffer = await createExcelWorkbook(data, isKE);
 
     // Настраиваем транспортер
     const transporter = createTransporter();

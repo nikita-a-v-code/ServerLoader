@@ -1,7 +1,7 @@
 const ExcelJS = require("exceljs");
 
 // Функция создания Excel файла (вынесена из excel.js для переиспользования)
-const createExcelWorkbook = async (data) => {
+const createExcelWorkbook = async (data, isKE = false) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Данные загрузчика");
 
@@ -94,7 +94,7 @@ const createExcelWorkbook = async (data) => {
     "РКЭС",
     "Мастерский участок",
     "Населенный пункт",
-    "Микрорайон/квартал",
+    "Идентификатор объекта",
     "Улица",
     "Дом",
     "Корпус (литера)",
@@ -299,7 +299,7 @@ const createExcelWorkbook = async (data) => {
     РКЭС: "rkes",
     "Мастерский участок": "masterUnit",
     "Населенный пункт": "settlement",
-    "Микрорайон/квартал": "microdistrict",
+    "Идентификатор объекта": "objectID",
     Улица: "street",
     Дом: "house",
     "Корпус (литера)": "building",
@@ -431,12 +431,12 @@ const createExcelWorkbook = async (data) => {
     };
 
     const row = [
-      'ОАО "Коммунэнерго"',
+      isKE ? "Счетчики с полным набором данных" : 'ОАО "Коммунэнерго"',
       emptyToNull(normalizedItem.mpes),
       emptyToNull(normalizedItem.rkes),
       emptyToNull(normalizedItem.masterUnit),
       emptyToNull(normalizedItem.settlement),
-      emptyToNull(normalizedItem.microdistrict),
+      emptyToNull(normalizedItem.objectID),
       emptyToNull(normalizedItem.street),
       formatHouse(normalizedItem.house),
       emptyToNull(normalizedItem.building),

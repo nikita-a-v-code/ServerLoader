@@ -38,6 +38,7 @@ app.use("/api/excel", require("./routes/excel/excel"));
 app.use("/api/settings", require("./routes/settings/settings"));
 app.use("/api/users", require("./routes/users/users"));
 app.use("/api/action-logs", require("./routes/action-logs/action-logs"));
+app.use("/api/", require("./routes/objectid/objectid"));
 
 // =============================================================================
 // STATIC FILES (React Frontend)

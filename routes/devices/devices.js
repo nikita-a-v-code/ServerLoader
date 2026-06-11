@@ -14,11 +14,11 @@ router.get("/device", async (req, res) => {
 
 // Создать новую модель счетчика
 router.post("/device", async (req, res) => {
-  const { name, password, ip_address, requests, adv_settings } = req.body;
+  const { name, password, ip_address, requests, adv_settings, requests_ke } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO "Enforce".device_types (name, password, ip_address, requests, adv_settings) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [name, password, ip_address || "", requests || "", adv_settings || ""]
+      'INSERT INTO "Enforce".device_types (name, password, ip_address, requests, adv_settings, requests_ke) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, password, ip_address || "", requests || "", adv_settings || "", requests_ke || ""]
     );
     res.json(result.rows[0]);
   } catch (error) {
@@ -29,11 +29,11 @@ router.post("/device", async (req, res) => {
 // Обновить модель счетчика и пароль
 router.put("/device/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, password, ip_address, requests, adv_settings } = req.body;
+  const { name, password, ip_address, requests, adv_settings, requests_ke } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE "Enforce".device_types SET name = $1, password = $2, ip_address = $3, requests = $4, adv_settings = $5 WHERE id = $6 RETURNING *',
-      [name, password, ip_address || "", requests || "", adv_settings || "", id]
+      'UPDATE "Enforce".device_types SET name = $1, password = $2, ip_address = $3, requests = $4, adv_settings = $5, requests_ke = $6 WHERE id = $7 RETURNING *',
+      [name, password, ip_address || "", requests || "", adv_settings || "", requests_ke || "", id]
     );
     res.json(result.rows[0]);
   } catch (error) {

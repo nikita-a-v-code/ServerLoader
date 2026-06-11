@@ -203,4 +203,81 @@ router.post("/emails/:id/default", async (req, res) => {
   }
 });
 
+// === Endpoints для app_settings ===
+// Получить значение параметра
+router.get("/app-setting/:key", async (req, res) => {
+  try {
+    const { key } = req.params;
+    const result = await pool.query(
+      'SELECT value FROM "Enforce".app_settings WHERE key = $1',
+      [key]
+    );
+    const value = result.rows[0]?.value;
+    res.json({ key, value: value === undefined ? null : value });
+  } catch (error) {
+    console.error(`Ошибка чтения app_settings[${req.params.key}]:`, error);
+    res.status(500).json({ error: "Не удалось получить параметр" });
+  }
+});
+
+// Получить все параметры
+router.get("/app-settings", async (req, res) => {
+  try {
+    const result = await pool.query('SELECT key, value FROM "Enforce".app_settings');
+    const settings = {};
+    result.rows.forEach((row) => {
+      settings[row.key] = row.value;
+    });
+    res.json(settings);
+  } catch (error) {
+    console.error("Ошибка чтения app_settings:", error);
+    res.status(500).json({ error: "Не удалось получить параметры" });
+  }
+});
+
+// Установить параметр
+router.post("/app-setting", async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    if (!key) {
+      return res.status(400).json({ error: "Ключ обязателен" });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO "Enforce".app_settings (key, value) VALUES ($1, $2)
+       ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+       RETURNING key, value`,
+      [key, value === null ? null : String(value)]
+    );
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Ошибка сохранения app_settings:", error);
+    res.status(500).json({ error: "Не удалось сохранить параметр" });
+  }
+});
+
+// Обновить параметр
+router.put("/app-setting/:key", async (req, res) => {
+  try {
+    const { key } = req.params;
+    const { value } = req.body;
+
+    const result = await pool.query(
+      `UPDATE "Enforce".app_settings SET value = $1 WHERE key = $2
+       RETURNING key, value`,
+      [value === null ? null : String(value), key]
+    );
+
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: "Параметр не найден" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Ошибка обновления app_settings:", error);
+    res.status(500).json({ error: "Не удалось обновить параметр" });
+  }
+});
+
 module.exports = router;

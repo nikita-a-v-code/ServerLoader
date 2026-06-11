@@ -6,10 +6,10 @@ const router = express.Router();
 /* Выгрузка данных в Excel */
 router.post("/export", async (req, res) => {
   try {
-    const { data } = req.body;
+    const { data, isKE = false } = req.body;
 
     /* Создаем Excel файл используя утилиту */
-    const buffer = await createExcelWorkbook(data);
+    const buffer = await createExcelWorkbook(data, isKE);
 
     /* Устанавливаем заголовки ответа */
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
